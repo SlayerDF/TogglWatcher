@@ -140,7 +140,7 @@ namespace TogglWatcher
             
             else
             {
-                _icon.ShowBalloonTip(2000, watcher.Name, $"Timer started: {entry.Description} ({StringifySecondsDuration(entry.Duration)})", ToolTipIcon.Info);
+                _icon.ShowBalloonTip(2000, watcher.Name, $"Timer started: {TruncateString(entry.Description, 30)} ({StringifySecondsDuration(entry.Duration)})", ToolTipIcon.Info);
             }
         }
 
@@ -154,10 +154,10 @@ namespace TogglWatcher
 
                 text += $"\n  {watcher.Name}: ";
                 if (entry == null) text += "no entry";
-                else text += $"{entry.Description} ({StringifySecondsDuration(entry.Duration)})";
+                else text += $"{TruncateString(entry.Description, 20)} ({StringifySecondsDuration(entry.Duration)})";
             }
 
-            _icon.Text = text;
+            _icon.Text = TruncateString(text, 63);
         }
 
         string StringifySecondsDuration(long seconds)
@@ -170,6 +170,11 @@ namespace TogglWatcher
             if (durationOffset.Second > 0) parts.Add($"{durationOffset.Second}s");
 
             return string.Join(' ', parts);
+        }
+
+        string TruncateString(string str, int maxLength = 10)
+        {
+            return str.Length > maxLength - 3 ? str.Substring(0, maxLength - 3) + "..." : str;
         }
 
         void SaveWatchers()

@@ -5,6 +5,7 @@ namespace TogglWatcher.TogglApi.Models
     public class TogglTimeEntry
 	{
 		private long _duration;
+		private string _description = "(no description)";
 
         public int Id { get; set; }
 		public int Wid { get; set; }
@@ -23,7 +24,14 @@ namespace TogglWatcher.TogglApi.Models
 				}
 			}
 		}
-		public string Description { get; set; }
+		public string Description { 
+			get => _description;
+			set {
+				_description = value;
+
+				if (string.IsNullOrEmpty(value)) _description = "(no description)";
+			}
+		}
 		public DateTime At { get; set; }
     }
 }
