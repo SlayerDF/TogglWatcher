@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 using TogglWatcher.TogglApi.Models;
 
 namespace TogglWatcher
@@ -45,6 +47,14 @@ namespace TogglWatcher
             (int)info.GetValue("check_interval_seconds", typeof(int)),
             (bool)info.GetValue("notification_enabled", typeof(bool))
         ) {}
+
+        public async Task<List<TogglTimeEntry>> GetTodayEntries()
+        {
+            var from = DateTime.Today;
+            var to = from.AddDays(1).AddTicks(-1);
+
+            return await _api.GetTimeEntries(from, to);
+        }
 
         public void Refresh()
         {

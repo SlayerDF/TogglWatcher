@@ -112,6 +112,9 @@ namespace TogglWatcher
         {
             var menu = new ToolStripMenuItem(watcher.Name);
             menu.DropDownItems.AddRange(new ToolStripMenuItem[] {
+                new ToolStripMenuItem("View", null, async (object sender, EventArgs e) => {
+                    new DayEntriesForm(await watcher.GetTodayEntries()).Show();
+                }),
                 new ToolStripMenuItem("Refresh", null, (object sender, EventArgs e) => watcher.Refresh()),
                 new ToolStripMenuItem("Edit", null, (object sender, EventArgs e) => {
                     WatcherForm.GetWatcher(watcher);
@@ -140,7 +143,9 @@ namespace TogglWatcher
             
             else
             {
-                _icon.ShowBalloonTip(2000, watcher.Name, $"Timer started: {TruncateString(entry.Description, 30)} ({StringifySecondsDuration(entry.Duration)})", ToolTipIcon.Info);
+                var text = $"Timer started: {Helpers.TruncateString(entry.Description, 30)} ({Helpers.StringifySecondsDuration(entry.Duration)})";
+
+                _icon.ShowBalloonTip(2000, watcher.Name, text, ToolTipIcon.Info);
             }
         }
 
@@ -154,27 +159,10 @@ namespace TogglWatcher
 
                 text += $"\n  {watcher.Name}: ";
                 if (entry == null) text += "no entry";
-                else text += $"{TruncateString(entry.Description, 20)} ({StringifySecondsDuration(entry.Duration)})";
+                else text += $"{Helpers.TruncateString(entry.Description, 20)} ({Helpers.StringifySecondsDuration(entry.Duration)})";
             }
 
-            _icon.Text = TruncateString(text, 63);
-        }
-
-        string StringifySecondsDuration(long seconds)
-        {
-            var durationOffset = DateTimeOffset.FromUnixTimeSeconds(seconds);
-
-            var parts = new List<string>();
-            if (durationOffset.Hour > 0) parts.Add($"{durationOffset.Hour}h");
-            if (durationOffset.Minute > 0) parts.Add($"{durationOffset.Minute}m");
-            if (durationOffset.Second > 0) parts.Add($"{durationOffset.Second}s");
-
-            return string.Join(' ', parts);
-        }
-
-        string TruncateString(string str, int maxLength = 10)
-        {
-            return str.Length > maxLength - 3 ? str.Substring(0, maxLength - 3) + "..." : str;
+            _icon.Text = Helpers.TruncateString(text, 63);
         }
 
         void SaveWatchers()

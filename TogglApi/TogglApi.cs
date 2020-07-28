@@ -1,10 +1,12 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using TogglWatcher.TogglApi.Models;
 
 namespace TogglWatcher.TogglApi
@@ -35,6 +37,21 @@ namespace TogglWatcher.TogglApi
             catch (HttpRequestException e)
             {
                 throw new Exception($"couldn't get current time entry: {e.Message}");
+            }
+        }
+
+        public async Task<List<TogglTimeEntry>> GetTimeEntries(DateTime from, DateTime to)
+        {
+            try
+            {
+                var togglRespRaw = await ValidateResponseAndGetString(() => 
+                    _client.GetAsync($"https://www.toggl.com/api/v8/time_entries?start_date={StringifyDate(from)}&end_date={StringifyDate(to)}"));
+
+                return JsonConvert.DeserializeObject<List<TogglTimeEntry>>(togglRespRaw);
+            }
+            catch (HttpRequestException e)
+            {
+                throw new Exception($"couldn't get time entries: {e.Message}");
             }
         }
 
@@ -96,6 +113,11 @@ namespace TogglWatcher.TogglApi
             var resp = await ValidateResponse(func);
 
             return await resp.Content.ReadAsStringAsync();
+        }
+
+        private string StringifyDate(DateTime date)
+        {
+            return HttpUtility.UrlEncode(date.ToString(@"yyyy-MM-ddTHH:mm:sszzz"));
         }
     }
 }

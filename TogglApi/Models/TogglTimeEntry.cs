@@ -12,6 +12,8 @@ namespace TogglWatcher.TogglApi.Models
 		public int Pid { get; set; }
 		public bool Billable { get; set; }
 		public DateTime Start { get; set; }
+		public DateTime Stop { get; set; }
+		public DateTime End => Stop != null ? Stop : Start.AddSeconds(Duration);
 		public long Duration {
 			get => _duration;
 			set
