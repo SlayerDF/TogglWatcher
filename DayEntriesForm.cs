@@ -10,8 +10,6 @@ namespace TogglWatcher
 {
     public partial class DayEntriesForm : Form
     {
-        List<TogglTimeEntry> _entries;
-
         public DayEntriesForm(List<TogglTimeEntry> entries)
         {
             InitializeComponent();
@@ -28,6 +26,98 @@ namespace TogglWatcher
 
             dateTimePicker_from.Value = DateTime.Today;
             dateTimePicker_to.Value = DateTime.Today.AddDays(1).AddMilliseconds(-1);
+
+            BuildEntries(entries, dateTimePicker_from.Value, dateTimePicker_to.Value);
+        }
+
+        private void BuildEntries(List<TogglTimeEntry> entries, DateTime from, DateTime to)
+        {
+            var panel = tableLayoutPanel_entries;
+
+            panel.Controls.Clear();
+            panel.RowCount = entries.Count;
+
+            for (var i = 0; i < entries.Count; i++)
+            {
+                panel.RowStyles.Add(new RowStyle());
+
+                var entry = entries[i];
+
+                if (entry.Stop != default) BuildActiveEntry(entry);
+                else panel.Controls.Add(BuildEntry(entry, from, to), 0, i);
+
+                if (i != entries.Count - 1)
+                {
+                    var nextEntry = entries[i + 1];
+
+                    BuildIdle(entry, nextEntry);
+                }
+            }
+        }
+
+        private void BuildActiveEntry(TogglTimeEntry entry)
+        {
+        }
+
+        private TableLayoutPanel BuildEntry(TogglTimeEntry entry, DateTime from, DateTime to)
+        {
+            var timeLabel = new Label()
+            {
+                AutoEllipsis = true,
+                Dock = DockStyle.Top,
+                Font = new Font("Arial", 15.75F, FontStyle.Bold, GraphicsUnit.Point),
+                ForeColor = Color.White,
+                Margin = new Padding(10),
+                Text = BuildEntryTimeText(entry, from, to),
+            };
+
+            var descLabel = new Label()
+            {
+                AutoEllipsis = true,
+                Dock = DockStyle.Top,
+                Font = new Font("Arial", 14.25F, FontStyle.Regular, GraphicsUnit.Point),
+                ForeColor = Color.White,
+                Margin = new Padding(10),
+                Text = entry.Description,
+            };
+
+            var panel = new TableLayoutPanel()
+            {
+                AutoSize = true,
+                AutoSizeMode = AutoSizeMode.GrowAndShrink,
+                BackColor = Color.FromArgb(128, 128, 255),
+                CellBorderStyle = TableLayoutPanelCellBorderStyle.OutsetDouble,
+                ColumnCount = 1,
+                Dock = DockStyle.Top,
+                Margin = new Padding(0, 0, 0, 10),
+                RowCount = 2,
+            };
+
+            panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            panel.RowStyles.Add(new RowStyle());
+            panel.RowStyles.Add(new RowStyle());
+            panel.Controls.Add(timeLabel, 0, 0);
+            panel.Controls.Add(descLabel, 0, 1);
+
+            return panel;
+        }
+
+        private void BuildIdle(TogglTimeEntry currentEntry, TogglTimeEntry nextEntry)
+        {
+
+        }
+
+        private string BuildEntryTimeText(TogglTimeEntry entry, DateTime from, DateTime to)
+        {
+            var dateFormat = entry.Start.Date != entry.End.Date ? "dd.MM.yyyy HH:mm:ss" : "HH:mm:ss";
+
+            MessageBox.Show($"{entry.End} {entry.End.ToString(dateFormat)}");
+
+            var result = $"From {entry.Start.ToString(dateFormat)} to {entry.End.ToString(dateFormat)}";
+
+            if (from.Date != to.Date && entry.Start.Date == entry.End.Date) result += $" ({entry.Start.Date:dd.MM.yyyy})";
+
+            return result;
         }
 
         //private void DayEntriesForm_Resize(object sender, EventArgs e)
