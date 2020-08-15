@@ -1,0 +1,22 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="TogglWatcher.Views.AddWatcherView">
+	<StackPanel Spacing="5">
+		<WrapPanel>
+			<Button ToolTip.Tip="Back" Width="36" Height="24"
+					Command="{Binding Back}">
+				<Path Width="20" Height="14"  Stretch="Fill" Fill="#FF000000" Data="F1 M 57,42L 57,34L 32.25,34L 42.25,24L 31.75,24L 17.75,38L 31.75,52L 42.25,52L 32.25,42L 57,42 Z "/>
+			</Button>
+			<Button ToolTip.Tip="Create" Width="36" Height="24"
+					Command="{Binding Create}">
+				<Path Width="20" Height="14" Stretch="Fill" Fill="#FF000000" Data="F1 M 23.7501,33.25L 34.8334,44.3333L 52.2499,22.1668L 56.9999,26.9168L 34.8334,53.8333L 19.0001,38L 23.7501,33.25 Z "/>
+			</Button>
+		</WrapPanel>
+		<TextBox Watermark="Watcher name" Text="{Binding Name}" />
+		<TextBox Watermark="Toggl API token" Text="{Binding ApiToken}" PasswordChar="*" />
+		<CheckBox Content="Notify" IsChecked="{Binding Notify}" />
+	</StackPanel>
+</UserControl>
